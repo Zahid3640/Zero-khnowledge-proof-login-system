@@ -1,0 +1,42 @@
+# Dependencies
+node_modules/
+
+# Rust / Anchor build output
+target/
+
+# Solana local validator ledger
+test-ledger/
+
+# Noir circuit build artifacts
+circuits/*/target/
+circuits/*/client/node_modules/
+
+# Next.js / NestJS build output
+.next/
+out/
+dist/
+build/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# ZK proof artifacts (regenerated locally)
+*.proof
+*.pw
+witness.gz
+*.ccs
+*.pk
+*.vk

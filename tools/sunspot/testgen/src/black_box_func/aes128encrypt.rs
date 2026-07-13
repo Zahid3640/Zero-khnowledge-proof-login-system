@@ -1,0 +1,83 @@
+use crate::encode;
+use acir::{
+    FieldElement,
+    circuit::opcodes::{BlackBoxFuncCall, FunctionInput},
+    native_types::Witness,
+};
+use std::io::Write;
+use tracing::trace;
+
+fn generate_aes128encrypt_test_empty(path: &str) {
+    let file_name = format!("{path}/aes128encrypt_empty.bin");
+
+    // Check if the file already exists
+    if std::path::Path::new(&file_name).exists() {
+        std::fs::remove_file(&file_name).expect("Failed to remove file");
+    }
+
+    // Create a new file
+    let mut file = std::fs::File::create(&file_name).expect("Failed to create file");
+    let aes128encrypt_function_call = BlackBoxFuncCall::AES128Encrypt {
+        inputs: vec![],
+        iv: Box::new([FunctionInput::<FieldElement>::Witness(Witness(1234)); 16]),
+        key: Box::new([FunctionInput::<FieldElement>::Witness(Witness(5678)); 16]),
+        outputs: vec![],
+    };
+
+    let data = encode(&aes128encrypt_function_call);
+    file.write_all(data.as_slice())
+        .expect("Failed to write data to file");
+
+    trace!(
+        "Generated test file: {} with bytes {:?} len {}",
+        file_name,
+        data,
+        data.len()
+    );
+}
+
+fn generate_aes128encrypt_test_with_inputs_and_outputs(path: &str) {
+    let file_name = format!("{path}/aes128encrypt_with_inputs_and_outputs.bin");
+
+    // Check if the file already exists
+    if std::path::Path::new(&file_name).exists() {
+        std::fs::remove_file(&file_name).expect("Failed to remove file");
+    }
+
+    // Create a new file
+    let mut file = std::fs::File::create(&file_name).expect("Failed to create file");
+    let aes128encrypt_function_call = BlackBoxFuncCall::AES128Encrypt {
+        inputs: vec![
+            FunctionInput::<FieldElement>::Witness(Witness(1234)),
+            FunctionInput::<FieldElement>::Witness(Witness(2345)),
+        ],
+        iv: Box::new([FunctionInput::<FieldElement>::Witness(Witness(3456)); 16]),
+        key: Box::new([FunctionInput::<FieldElement>::Witness(Witness(4567)); 16]),
+        outputs: vec![Witness(1234), Witness(2345), Witness(3456)],
+    };
+
+    let data = encode(&aes128encrypt_function_call);
+    file.write_all(data.as_slice())
+        .expect("Failed to write data to file");
+
+    trace!(
+        "Generated test file: {} with bytes {:?} len {}",
+        file_name,
+        data,
+        data.len()
+    );
+}
+
+pub fn generate_tests(path: &str) {
+    // Check if the directory exists
+    let directory_path = format!("{path}/aes128encrypt");
+    if !std::path::Path::new(&directory_path).exists() {
+        // Create the directory
+        std::fs::create_dir_all(&directory_path).expect("Failed to create directory");
+    }
+
+    generate_aes128encrypt_test_empty(&directory_path);
+    generate_aes128encrypt_test_with_inputs_and_outputs(&directory_path);
+
+    trace!("Generating tests in directory: {}", directory_path);
+}

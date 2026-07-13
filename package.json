@@ -1,0 +1,23 @@
+{
+  "name": "zk-face-login",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "dev:frontend": "pnpm --dir apps/frontend dev",
+    "dev:backend": "pnpm --dir apps/backend start:dev",
+    "build:program": "anchor build",
+    "test:program": "anchor test",
+    "build:circuit": "cd circuits/face-login && nargo compile",
+    "test:circuit": "cd circuits/face-login && nargo test"
+  },
+  "devDependencies": {
+    "@nestjs/cli": "^11.0.23",
+    "@types/node": "^26.1.0",
+    "tsx": "^4.23.0",
+    "typescript": "^6.0.3"
+  },
+  "dependencies": {
+    "@coral-xyz/anchor": "^0.32.1",
+    "@solana/web3.js": "^1.98.4"
+  }
+}

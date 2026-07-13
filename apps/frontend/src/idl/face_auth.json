@@ -1,0 +1,769 @@
+{
+  "address": "42X4XP4LuW5jm2cCkZhib61iJx62dnw8AEEYJQzPhhJW",
+  "metadata": {
+    "name": "face_auth",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Created with Anchor"
+  },
+  "instructions": [
+    {
+      "name": "record_login",
+      "discriminator": [
+        105,
+        56,
+        98,
+        136,
+        208,
+        206,
+        44,
+        201
+      ],
+      "accounts": [
+        {
+          "name": "user_face",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  117,
+                  115,
+                  101,
+                  114,
+                  45,
+                  102,
+                  97,
+                  99,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "owner"
+              }
+            ]
+          }
+        },
+        {
+          "name": "login_session",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  111,
+                  103,
+                  105,
+                  110,
+                  45,
+                  115,
+                  101,
+                  115,
+                  115,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "owner"
+              },
+              {
+                "kind": "arg",
+                "path": "nonce"
+              }
+            ]
+          }
+        },
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "user_face"
+          ]
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "nonce",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "register_commitment",
+      "discriminator": [
+        255,
+        61,
+        47,
+        193,
+        196,
+        213,
+        24,
+        136
+      ],
+      "accounts": [
+        {
+          "name": "user_face",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  117,
+                  115,
+                  101,
+                  114,
+                  45,
+                  102,
+                  97,
+                  99,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "owner"
+              }
+            ]
+          }
+        },
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "commitment",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "register_commitment_hex",
+      "discriminator": [
+        248,
+        84,
+        81,
+        13,
+        154,
+        112,
+        71,
+        61
+      ],
+      "accounts": [
+        {
+          "name": "user_face",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  117,
+                  115,
+                  101,
+                  114,
+                  45,
+                  102,
+                  97,
+                  99,
+                  101,
+                  45,
+                  118,
+                  50
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "owner"
+              }
+            ]
+          }
+        },
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "commitment_hex",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "revoke_commitment",
+      "discriminator": [
+        136,
+        63,
+        150,
+        38,
+        176,
+        128,
+        1,
+        76
+      ],
+      "accounts": [
+        {
+          "name": "user_face",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  117,
+                  115,
+                  101,
+                  114,
+                  45,
+                  102,
+                  97,
+                  99,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "owner"
+              }
+            ]
+          }
+        },
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "user_face"
+          ]
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "update_commitment",
+      "discriminator": [
+        57,
+        185,
+        84,
+        54,
+        212,
+        14,
+        153,
+        0
+      ],
+      "accounts": [
+        {
+          "name": "user_face",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  117,
+                  115,
+                  101,
+                  114,
+                  45,
+                  102,
+                  97,
+                  99,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "owner"
+              }
+            ]
+          }
+        },
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "user_face"
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "new_commitment",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "update_commitment_hex",
+      "discriminator": [
+        108,
+        247,
+        138,
+        136,
+        102,
+        213,
+        194,
+        242
+      ],
+      "accounts": [
+        {
+          "name": "user_face",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  117,
+                  115,
+                  101,
+                  114,
+                  45,
+                  102,
+                  97,
+                  99,
+                  101,
+                  45,
+                  118,
+                  50
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "owner"
+              }
+            ]
+          }
+        },
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "user_face"
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "commitment_hex",
+          "type": "string"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "LoginSession",
+      "discriminator": [
+        219,
+        206,
+        236,
+        251,
+        10,
+        162,
+        19,
+        251
+      ]
+    },
+    {
+      "name": "UserFaceAccount",
+      "discriminator": [
+        36,
+        127,
+        91,
+        28,
+        46,
+        174,
+        20,
+        83
+      ]
+    },
+    {
+      "name": "UserFaceHexAccount",
+      "discriminator": [
+        117,
+        251,
+        100,
+        144,
+        29,
+        48,
+        173,
+        118
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "CommitmentHexRegistered",
+      "discriminator": [
+        190,
+        64,
+        20,
+        141,
+        54,
+        229,
+        124,
+        30
+      ]
+    },
+    {
+      "name": "CommitmentHexUpdated",
+      "discriminator": [
+        34,
+        97,
+        117,
+        122,
+        35,
+        243,
+        220,
+        224
+      ]
+    },
+    {
+      "name": "CommitmentRegistered",
+      "discriminator": [
+        130,
+        34,
+        22,
+        46,
+        5,
+        168,
+        155,
+        134
+      ]
+    },
+    {
+      "name": "CommitmentRevoked",
+      "discriminator": [
+        192,
+        52,
+        75,
+        249,
+        4,
+        195,
+        166,
+        27
+      ]
+    },
+    {
+      "name": "CommitmentUpdated",
+      "discriminator": [
+        189,
+        192,
+        67,
+        86,
+        136,
+        180,
+        128,
+        238
+      ]
+    },
+    {
+      "name": "LoginVerified",
+      "discriminator": [
+        163,
+        145,
+        149,
+        192,
+        2,
+        103,
+        28,
+        173
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "InactiveCommitment",
+      "msg": "Face commitment is inactive."
+    },
+    {
+      "code": 6001,
+      "name": "InvalidCommitmentHexLength",
+      "msg": "Commitment hex must be exactly 66 characters including 0x prefix."
+    },
+    {
+      "code": 6002,
+      "name": "InvalidCommitmentHexPrefix",
+      "msg": "Commitment hex must start with 0x."
+    }
+  ],
+  "types": [
+    {
+      "name": "CommitmentHexRegistered",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "commitment_hex",
+            "type": "string"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CommitmentHexUpdated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "commitment_hex",
+            "type": "string"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CommitmentRegistered",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "commitment",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CommitmentRevoked",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CommitmentUpdated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "commitment",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "LoginSession",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "nonce",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "verified",
+            "type": "bool"
+          },
+          {
+            "name": "created_at",
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "LoginVerified",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "nonce",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "UserFaceAccount",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "commitment",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "is_active",
+            "type": "bool"
+          },
+          {
+            "name": "created_at",
+            "type": "i64"
+          },
+          {
+            "name": "updated_at",
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "UserFaceHexAccount",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "commitment_hex",
+            "type": "string"
+          },
+          {
+            "name": "is_active",
+            "type": "bool"
+          },
+          {
+            "name": "created_at",
+            "type": "i64"
+          },
+          {
+            "name": "updated_at",
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    }
+  ]
+}

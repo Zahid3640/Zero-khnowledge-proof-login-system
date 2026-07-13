@@ -1,0 +1,212 @@
+name: Unified CI
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - "go/**"
+      - "gnark-solana/**"
+      - "noir-samples/**"
+      - ".github/**"
+      - "!**/README.md"
+      - "!**/readme.md"
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - "go/**"
+      - "gnark-solana/**"
+      - "noir-samples/**"
+      - ".github/**"
+      - "!**/README.md"
+      - "!**/readme.md"
+
+env:
+  SUNSPOT_PROJECTS: |
+    noir-samples/expressions/sum_a_b
+    noir-samples/black_box_functions/keccak_f1600
+    noir-samples/black_box_functions/xor
+
+
+jobs:
+# -----------------------------------------------------------
+# JOB 1 — NOIR BUILD + EXECUTE
+# -----------------------------------------------------------
+  noir:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: noir-lang/noirup@v0.1.2
+        with:
+          toolchain: v1.0.0-beta.22
+
+      - name: Build & execute Noir projects
+        run: scripts/regen_test_artifacts.sh
+
+      - name: Upload Noir targets
+        uses: actions/upload-artifact@v4
+        with:
+          name: noir-targets
+          path: noir-samples/**/target
+          retention-days: 1
+
+# -----------------------------------------------------------
+# JOB 2 — GO BUILD + TEST
+# -----------------------------------------------------------
+  go:
+    needs: noir
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v4
+        with:
+          go-version: '1.24.2'
+
+      - run: cd go && go mod tidy
+      - run: cd go && go build -o sunspot -v ./cmd/sunspot && mv sunspot $GITHUB_WORKSPACE/
+
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+          components: clippy, rustfmt
+      - run: cd testgen && cargo run
+
+      # ------------------------------------------
+      # Download Noir compiled targets into workspace
+      # ------------------------------------------
+      - name: Download Noir targets
+        uses: actions/download-artifact@v4
+        with:
+          name: noir-targets
+          path: noir-samples 
+      - run: cd go && go test ./... -timeout 0
+      - run: cd go && go vet ./...
+
+      - name: Upload Sunspot binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: sunspot-bin
+          path: sunspot
+          retention-days: 1
+
+# -----------------------------------------------------------
+# JOB 3 — SUNSPOT PIPELINE
+# -----------------------------------------------------------
+  sunspot:
+    runs-on: ubuntu-latest
+    needs: [noir, go]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download Sunspot binary
+        uses: actions/download-artifact@v4
+        with:
+          name: sunspot-bin
+
+      # ------------------------------------------
+      # Download Noir compiled targets into workspace
+      # ------------------------------------------
+      - name: Download Noir targets
+        uses: actions/download-artifact@v4
+        with:
+          name: noir-targets
+          path: noir-samples
+
+      - name: Run Sunspot workflow
+        run: |
+          mkdir -p artifacts/sunspot
+          chmod +x sunspot
+
+          for project in $SUNSPOT_PROJECTS; do
+            echo "▶️ Sunspot: $project"
+            cd "$project/target"
+
+            JSON=$(ls *.json | head -n1)
+            GZ=$(ls *.gz | head -n1)
+
+            ../../../../sunspot compile "$JSON"
+            CCS=$(ls *.ccs | head -n1)
+
+            ../../../../sunspot setup "$CCS"
+            VK=$(ls *.vk | head -n1)
+            PK=$(ls *.pk | head -n1)
+
+            ../../../../sunspot prove "$JSON" "$GZ" "$CCS" "$PK"
+
+            PW=$(ls *.pw | head -n1)
+            PROOF=$(ls *.proof | head -n1)
+
+            cp -v "$VK" "$PW" "$PROOF" "$GITHUB_WORKSPACE/artifacts/sunspot"
+
+            cd - > /dev/null
+          done
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sunspot-output
+          path: artifacts/sunspot
+          retention-days: 1
+
+
+# -----------------------------------------------------------
+# JOB 4 — SOLANA / RUST PROGRAM BUILD
+# -----------------------------------------------------------
+  solana:
+    runs-on: ubuntu-latest
+    needs: [go, sunspot]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download Sunspot output
+        uses: actions/download-artifact@v4
+        with:
+          name: sunspot-output
+          path: gnark-solana/crates/verifier-bin/test_files
+
+      - name: Make default.vk
+        run: |
+          cp -v gnark-solana/crates/verifier-bin/test_files/xor.vk gnark-solana/crates/verifier-bin/default.vk
+
+      - name: Download Sunspot output
+        uses: actions/download-artifact@v4
+        with:
+          name: sunspot-output
+          path: gnark-solana/crates/verifier-lib/src/test_files
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+    
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+          components: clippy, rustfmt
+
+      - name: Install Solana toolchain
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/solana-developers/solana-install/main/install.sh | bash
+          echo "$HOME/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
+
+      - name: Build SBF program
+        working-directory: gnark-solana
+        run: cargo build-sbf
+
+      - working-directory: gnark-solana
+        run: cargo fmt --all -- --check
+
+      - working-directory: gnark-solana
+        run: cargo clippy --all-targets --all-features -- -D warnings
+
+      - working-directory: gnark-solana
+        run: cargo test --all --all-features --no-fail-fast --verbose
+
+      - working-directory: gnark-solana
+        run: cargo build --release --all-features
