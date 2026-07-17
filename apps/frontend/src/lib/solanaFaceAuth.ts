@@ -4,7 +4,8 @@ import { Buffer } from 'buffer';
 import idl from '@/idl/face_auth.json';
 
 const PROGRAM_ID = new PublicKey('42X4XP4LuW5jm2cCkZhib61iJx62dnw8AEEYJQzPhhJW');
-const DEVNET_RPC = 'https://api.devnet.solana.com';
+const SOLANA_RPC =
+  process.env.NEXT_PUBLIC_SOLANA_RPC || 'https://api.devnet.solana.com';
 
 type PhantomProvider = {
   isPhantom?: boolean;
@@ -44,7 +45,7 @@ async function getAnchorProgram() {
 
   const { publicKey } = await phantom.connect();
 
-  const connection = new Connection(DEVNET_RPC, 'confirmed');
+  const connection = new Connection(SOLANA_RPC, 'confirmed');
 
   const wallet = {
     publicKey,

@@ -2,6 +2,7 @@
   "name": "zk-face-login",
   "private": true,
   "version": "0.1.0",
+  "packageManager": "pnpm@11.10.0",
   "scripts": {
     "dev:frontend": "pnpm --dir apps/frontend dev",
     "dev:backend": "pnpm --dir apps/backend start:dev",

@@ -1,8 +1,0 @@
-allowBuilds:
-  bufferutil: true
-  sharp: true
-  unrs-resolver: false
-  utf-8-validate: true
-ignoredBuiltDependencies:
-  - sharp
-  - unrs-resolver
